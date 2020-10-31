@@ -29,7 +29,24 @@ def dog(update, context):
     logging.info('dog - chat_id: {}'.format(chat_id))
     context.bot.send_photo(chat_id=chat_id, photo=url, caption="Dog caption")
 
+
+def meme(update, context):
+    allowed_extension = ['jpg','jpeg','png']
+    file_extension = ''
+    while file_extension not in allowed_extension:
+        contents = requests.get('https://some-random-api.ml/meme').json()
+        url = contents['image']
+        file_extension = re.search("([^.]*)$",url).group(1).lower()
+    
+    chat_id = update.message.chat_id
+    logging.info('meme - chat_id: {}'.format(chat_id))
+    context.bot.send_photo(chat_id=chat_id, photo=url, caption="Enjoy a meme")
+
 def help(update, context):
+    '''
+    /dog
+    /meme
+    '''
     #chat_id = update.message.chat_id
     pass
 
@@ -49,6 +66,7 @@ def main():
     updater = Updater(my_token, use_context=True)
     dp = updater.dispatcher
     dp.add_handler(CommandHandler('dog',dog))
+    dp.add_handler(CommandHandler('meme',meme))
     #dp.add_handler(CommandHandler('help',help))
     updater.start_polling()
     updater.idle()
