@@ -1,17 +1,14 @@
 import os
+import re
 import sys
 import time
 import random
-# import telepot
+import logging
 import datetime
-# from gpiozero import LED
+import requests
 from dotenv import load_dotenv
 from os.path import join, dirname
-
 from telegram.ext import Updater, InlineQueryHandler, CommandHandler
-# from telegram.ext.dispatcher import run_async
-import requests
-import re
 
 def get_url():
     contents = requests.get('https://random.dog/woof.json').json()
@@ -29,6 +26,7 @@ def get_image_url():
 def dog(update, context):
     url = get_image_url()
     chat_id = update.message.chat_id
+    logging.info('dog - chat_id: {}'.format(chat_id))
     context.bot.send_photo(chat_id=chat_id, photo=url, caption="Dog caption")
 
 def help(update, context):
@@ -37,7 +35,12 @@ def help(update, context):
 
 
 def main():
-    print('Start listening . . .')
+    logging.basicConfig(format='%(asctime)s - %(levelname)s: %(message)s',
+                        filename='log_bot.log',
+                        level=logging.DEBUG,
+                        datefmt='%d/%m/%Y %H:%M:%S')
+    
+    logging.info('Starting bot')
 
     dotenv_path = join(dirname(__file__), '.env')
     load_dotenv(dotenv_path)
