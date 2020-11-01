@@ -10,23 +10,23 @@ from dotenv import load_dotenv
 from os.path import join, dirname
 from telegram.ext import Updater, InlineQueryHandler, CommandHandler
 
-def get_url():
-    contents = requests.get('https://random.dog/woof.json').json()
-    url = contents['url']
-    return url
 
-def get_image_url():
+# https://python-telegram-bot.readthedocs.io/en/stable/telegram.user.html
+
+
+def dog(update, context):
     allowed_extension = ['jpg','jpeg','png']
     file_extension = ''
     while file_extension not in allowed_extension:
-        url = get_url()
+        contents = requests.get('https://random.dog/woof.json').json()
+        url = contents['url']
         file_extension = re.search("([^.]*)$",url).group(1).lower()
-    return url
-
-def dog(update, context):
-    url = get_image_url()
+    
+    # TODO logging the user info: id, username, firstname and lastname
+    # this way, the Raspberry Pi will comunicate its' ID only to you
+    # and youìll be able to connect via SSH
     chat_id = update.message.chat_id
-    logging.info('dog - chat_id: {}'.format(chat_id))
+    logging.info('dog - chat_id: {} - user is bot: {}'.format(chat_id, is_bot))
     context.bot.send_photo(chat_id=chat_id, photo=url, caption="Dog caption")
 
 
@@ -54,7 +54,7 @@ def help(update, context):
 def main():
     logging.basicConfig(format='%(asctime)s - %(levelname)s: %(message)s',
                         filename='log_bot.log',
-                        level=logging.DEBUG,
+                        level=logging.INFO,
                         datefmt='%d/%m/%Y %H:%M:%S')
     
     logging.info('Starting bot')
