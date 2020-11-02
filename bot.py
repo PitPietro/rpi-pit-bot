@@ -22,11 +22,20 @@ def dog(update, context):
         url = contents['url']
         file_extension = re.search("([^.]*)$",url).group(1).lower()
     
-    # TODO logging the user info: id, username, firstname and lastname
-    # this way, the Raspberry Pi will comunicate its' ID only to you
-    # and youìll be able to connect via SSH
+    # the Raspberry Pi will comunicate its' ID only to you
+    # and you'll be able to connect via SSH (no need of screen)
+
     chat_id = update.message.chat_id
-    logging.info('dog - chat_id: {} - user is bot: {}'.format(chat_id, is_bot))
+    msg_id = update.message.message_id
+    user_obj = update.message.from_user
+    user_id = user_obj.id
+    user_username = user_obj.username
+    user_first_name = user_obj.first_name
+    user_last_name = user_obj.last_name
+
+    # user_id must be equal to chat_id
+
+    logging.info('dog - message id: {} ~ Sender ~ id: {} - username: {} - first name: {} - last name: {}'.format(msg_id, user_id, user_username, user_first_name, user_last_name))
     context.bot.send_photo(chat_id=chat_id, photo=url, caption="Dog caption")
 
 
