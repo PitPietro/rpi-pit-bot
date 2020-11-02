@@ -9,11 +9,8 @@ https://geeksforgeeks.org/python-execute-and-parse-linux-commands
 def run_cmd(cmd, args):
     data = subprocess.Popen([cmd, args], stdout=subprocess.PIPE)
     my_ip = str(data.communicate())
-    print("1 ", my_ip)
     my_ip = my_ip.split('\n')
-    print("2: ", my_ip)
     my_ip = my_ip[0].split('\\')
-    print("3: ", my_ip)
 
     res = []
     for line in my_ip:

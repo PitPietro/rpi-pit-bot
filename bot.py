@@ -6,6 +6,7 @@ import random
 import logging
 import datetime
 import requests
+import subprocess
 from dotenv import load_dotenv
 from os.path import join, dirname
 from telegram.ext import Updater, InlineQueryHandler, CommandHandler
@@ -62,6 +63,34 @@ def help_msg(update, context):
     pass
 
 
+def send_ip(update, context):
+    data = subprocess.Popen(['hostname', '-I'], stdout=subprocess.PIPE)
+    my_ip = str(data.communicate())
+    my_ip = my_ip.split('\n')
+    my_ip = my_ip[0].split('\\')
+
+    res = []
+    for line in my_ip:
+        res.append(line)
+    my_ip = res[0][3:]
+
+    chat_id = update.message.chat_id
+    context.bot.send_message(chat_id=chat_id, text='My local IP is: {}'.format(my_ip))
+
+    print("local IP is: ", my_ip)
+
+
+def info(update, context):
+    user_obj = update.message.from_user
+    user_id = user_obj.id
+    user_username = user_obj.username
+    user_first_name = user_obj.first_name
+    user_last_name = user_obj.last_name
+
+    msg = 'Hi {}! Your name is {} {} and your ID is {}'.format(user_username, user_first_name, user_last_name, user_id)
+    context.bot.send_message(chat_id=user_id, text=msg)
+
+
 def main():
     logging.basicConfig(format='%(asctime)s - %(levelname)s: %(message)s',
                         filename='log_bot.log',
@@ -73,11 +102,12 @@ def main():
     dotenv_path = join(dirname(__file__), '.env')
     load_dotenv(dotenv_path)
     my_token = os.environ.get('MY_TOKEN')
-
     updater = Updater(my_token, use_context=True)
     dp = updater.dispatcher
     dp.add_handler(CommandHandler('dog', dog))
     dp.add_handler(CommandHandler('meme', meme))
+    dp.add_handler(CommandHandler('ip', send_ip))
+    dp.add_handler(CommandHandler('info', info))
     # dp.add_handler(CommandHandler('help',help_msg))
     updater.start_polling()
     updater.idle()
