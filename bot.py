@@ -15,14 +15,14 @@ from telegram.ext import Updater, InlineQueryHandler, CommandHandler
 
 
 def dog(update, context):
-    allowed_extension = ['jpg','jpeg','png']
+    allowed_extension = ['jpg', 'jpeg', 'png']
     file_extension = ''
     while file_extension not in allowed_extension:
         contents = requests.get('https://random.dog/woof.json').json()
         url = contents['url']
-        file_extension = re.search("([^.]*)$",url).group(1).lower()
+        file_extension = re.search("([^.]*)$", url).group(1).lower()
     
-    # the Raspberry Pi will comunicate its' ID only to you
+    # the Raspberry Pi will communicate its' ID only to you
     # and you'll be able to connect via SSH (no need of screen)
 
     chat_id = update.message.chat_id
@@ -35,28 +35,30 @@ def dog(update, context):
 
     # user_id must be equal to chat_id
 
-    logging.info('dog - message id: {} ~ Sender ~ id: {} - username: {} - first name: {} - last name: {}'.format(msg_id, user_id, user_username, user_first_name, user_last_name))
+    logging.info('dog - message id: {} ~ Sender ~ id: {} - username: {} - first name: {} - last name: {}'
+                 .format(msg_id, user_id, user_username, user_first_name, user_last_name))
     context.bot.send_photo(chat_id=chat_id, photo=url, caption="Dog caption")
 
 
 def meme(update, context):
-    allowed_extension = ['jpg','jpeg','png']
+    allowed_extension = ['jpg', 'jpeg', 'png']
     file_extension = ''
     while file_extension not in allowed_extension:
         contents = requests.get('https://some-random-api.ml/meme').json()
         url = contents['image']
-        file_extension = re.search("([^.]*)$",url).group(1).lower()
+        file_extension = re.search("([^.]*)$", url).group(1).lower()
     
     chat_id = update.message.chat_id
     logging.info('meme - chat_id: {}'.format(chat_id))
     context.bot.send_photo(chat_id=chat_id, photo=url, caption="Enjoy a meme")
 
-def help(update, context):
-    '''
+
+def help_msg(update, context):
+    """
     /dog
     /meme
-    '''
-    #chat_id = update.message.chat_id
+    """
+    # chat_id = update.message.chat_id
     pass
 
 
@@ -74,11 +76,12 @@ def main():
 
     updater = Updater(my_token, use_context=True)
     dp = updater.dispatcher
-    dp.add_handler(CommandHandler('dog',dog))
-    dp.add_handler(CommandHandler('meme',meme))
-    #dp.add_handler(CommandHandler('help',help))
+    dp.add_handler(CommandHandler('dog', dog))
+    dp.add_handler(CommandHandler('meme', meme))
+    # dp.add_handler(CommandHandler('help',help_msg))
     updater.start_polling()
     updater.idle()
+
 
 if __name__ == '__main__':
     main()
