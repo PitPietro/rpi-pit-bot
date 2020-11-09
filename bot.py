@@ -1,20 +1,24 @@
-# import sys
+import sys
 # import time
 # import random
 import logging
 import os
 import re
 import subprocess
+from threading import Thread
 from os.path import join, dirname
 
 # import datetime
 import requests
 from dotenv import load_dotenv
-from telegram.ext import Updater, CommandHandler
+from telegram.ext import Updater, CommandHandler, Filters
 
 allowed_extension = ['jpg', 'jpeg', 'png']
 
+global_updater = Updater
+
 # https://python-telegram-bot.readthedocs.io/en/stable/telegram.user.html
+
 user_info = {'id': 0, 'username': '', 'first_name': '', 'last_name': ''}
 bot_info = {'id': 0, 'token': '', 'name': '', 'username': '', 'first_name': '', 'last_name': '', 'link': '',
             'commands': ''}
@@ -64,6 +68,22 @@ def log_bot():
         '~ Bot info ~ id: {} - token: {} - name: {} - username: {} - first name: {} - last name: {} - links: {} - '
         'commands: {}'.format(bot_info['id'], bot_info['token'], bot_info['name'], bot_info['username'],
                               bot_info['first_name'], bot_info['last_name'], bot_info['link'], bot_info['commands']))
+
+
+def stop_and_restart():
+    """Stop the Updater and replace the current process with a new one"""
+    global_updater.stop()
+    os.execl(sys.executable, sys.executable, *sys.argv)
+
+
+def restart(update, context):
+    # https://github.com/python-telegram-bot/python-telegram-bot/wiki/Code-snippets#simple-way-of-restarting-the-bot
+    # another possible solution: leave the main and make this code a py script
+    update_user_info(update)
+    log_info('restart', update.message.message_id)
+
+    update.message.reply_text('Bot is restarting...')
+    Thread(target=stop_and_restart).start()
 
 
 def dog(update, context):
@@ -159,8 +179,14 @@ def main():
     updater = Updater(my_token, use_context=True)
     dp = updater.dispatcher
 
+    global global_updater
+    global_updater = updater
+
+    sudo_users = Filters.user(user_id=[519818547])
     handlers = [CommandHandler('dog', dog), CommandHandler('meme', meme), CommandHandler('ip', send_ip),
-                CommandHandler('info', info), CommandHandler('help', help_msg)]
+                CommandHandler('info', info), CommandHandler('help', help_msg),
+                CommandHandler('restart', restart, filters=sudo_users)]
+
     for hs in handlers:
         dp.add_handler(hs)
 
