@@ -150,21 +150,24 @@ def main():
                         filename='log_bot.log',
                         level=logging.INFO,
                         datefmt='%d/%m/%Y %H:%M:%S')
-
     logging.info('Starting bot')
 
     dotenv_path = join(dirname(__file__), '.env')
     load_dotenv(dotenv_path)
     my_token = os.environ.get('MY_TOKEN')
-    updater = Updater(my_token, use_context=True)
 
+    updater = Updater(my_token, use_context=True)
     dp = updater.dispatcher
-    dp.add_handler(CommandHandler('dog', dog))
-    dp.add_handler(CommandHandler('meme', meme))
-    dp.add_handler(CommandHandler('ip', send_ip))
-    dp.add_handler(CommandHandler('info', info))
-    dp.add_handler(CommandHandler('help', help_msg))
+
+    handlers = [CommandHandler('dog', dog), CommandHandler('meme', meme), CommandHandler('ip', send_ip),
+                CommandHandler('info', info), CommandHandler('help', help_msg)]
+    for hs in handlers:
+        dp.add_handler(hs)
+
+    # Starts the bot, and the bot begins to start polling Telegram for any chat updates.
     updater.start_polling()
+
+    # Block the script until you sends a command to break from the Python script (Ctrl + C)
     updater.idle()
 
 
