@@ -118,14 +118,6 @@ def meme(update, context):
 
 
 def help_msg(update, context):
-    """
-    /dog
-    /meme
-    /ip
-    /info
-    """
-    # chat_id = update.message.chat_id
-
     msg = '/dog send a dog photo\n' \
           '/info send the user info\n' \
           '/ip send the local IP of the machine where the bot runs\n' \
@@ -146,9 +138,6 @@ def send_ip(update, context):
         res.append(line)
     my_ip = res[0][3:]
 
-    update_bot_info(context.bot)
-    log_bot()
-
     chat_id = update.message.chat_id
 
     update_user_info(update)
@@ -165,11 +154,27 @@ def info(update, context):
     context.bot.send_message(chat_id=user_info['id'], text=msg)
 
 
+def start(update, context):
+    update_user_info(update)
+
+    update_bot_info(context.bot)
+    update_user_info(update)
+    log_bot()
+
+    chat_id = update.message.chat_id
+
+    log_info('start', update.message.message_id)
+
+    msg = 'Hello, I\'m {}!\nPlease, type /help to get more information about what can I do'.format(bot_info['first_name'])
+    context.bot.send_message(chat_id=chat_id, text=msg)
+
+
 def main():
-    logging.basicConfig(format='%(asctime)s - %(levelname)s: %(message)s',
-                        filename='log_bot.log',
-                        level=logging.INFO,
-                        datefmt='%d/%m/%Y %H:%M:%S')
+    logging.basicConfig(
+        format='%(asctime)s - %(levelname)s: %(message)s',
+        filename='log_bot.log',
+        level=logging.INFO,
+        datefmt='%d/%m/%Y %H:%M:%S')
     logging.info('Starting bot')
 
     dotenv_path = join(dirname(__file__), '.env')
@@ -182,9 +187,13 @@ def main():
     global global_updater
     global_updater = updater
 
-    sudo_users = Filters.user(user_id=[519818547])
+    # list of bot's admins
+    id_1 = int(os.environ.get('ID_1'))
+    sudo_users = Filters.user(user_id=[id_1])
+
     handlers = [CommandHandler('dog', dog), CommandHandler('meme', meme), CommandHandler('ip', send_ip),
                 CommandHandler('info', info), CommandHandler('help', help_msg),
+                CommandHandler('start', start),
                 CommandHandler('restart', restart, filters=sudo_users)]
 
     for hs in handlers:
