@@ -1,6 +1,4 @@
 import sys
-# import time
-# import random
 import logging
 import os
 import re
@@ -16,8 +14,6 @@ from telegram.ext import Updater, CommandHandler, Filters
 allowed_extension = ['jpg', 'jpeg', 'png']
 
 global_updater = Updater
-
-# https://python-telegram-bot.readthedocs.io/en/stable/telegram.user.html
 
 user_info = {'id': 0, 'username': '', 'first_name': '', 'last_name': ''}
 bot_info = {'id': 0, 'token': '', 'name': '', 'username': '', 'first_name': '', 'last_name': '', 'link': '',
@@ -172,12 +168,12 @@ def start(update, context):
 def main():
     logging.basicConfig(
         format='%(asctime)s - %(levelname)s: %(message)s',
-        filename='log_bot.log',
+        filename='../log_bot.log',
         level=logging.INFO,
         datefmt='%d/%m/%Y %H:%M:%S')
     logging.info('Starting bot')
 
-    dotenv_path = join(dirname(__file__), '.env')
+    dotenv_path = join(dirname(__file__), '../.env')
     load_dotenv(dotenv_path)
     my_token = os.environ.get('MY_TOKEN')
 
