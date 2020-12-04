@@ -51,7 +51,7 @@ def help_command(update: Update, context: CallbackContext) -> None:
 
 
 def main():
-    dotenv_path = join(dirname(__file__), '../.env')
+    dotenv_path = join(dirname(__file__), '../../.env')
     load_dotenv(dotenv_path)
     my_token = os.environ.get('MY_TOKEN')
     # Create the Updater and pass it your bot's token.

@@ -54,7 +54,7 @@ def error(update, context):
 
 def main():
     """Start the bot."""
-    dotenv_path = join(dirname(__file__), '../.env')
+    dotenv_path = join(dirname(__file__), '../../.env')
     load_dotenv(dotenv_path)
     my_token = os.environ.get('MY_TOKEN')
 

@@ -131,7 +131,7 @@ def cancel(update: Update, context: CallbackContext) -> int:
 
 
 def main() -> None:
-    dotenv_path = join(dirname(__file__), '../.env')
+    dotenv_path = join(dirname(__file__), '../../.env')
     load_dotenv(dotenv_path)
     my_token = os.environ.get('MY_TOKEN')
 
